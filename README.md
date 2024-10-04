@@ -55,6 +55,7 @@ server: uvicorn
         "id": "1cb50ec8-d27e-4785-9e75-46ee1c337c88",
         "updated_at": "2024-10-04T16:36:26.049422"
     }
+]
 ```
 
 Filter kittens by `breed_id`:
