@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:17.0
+    container_name: kittens_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+    - ./data:/var/lib/postgresql/data
+  
+  api:
+    build:
+      context: .
+    container_name: kittens_api
+    restart: always
+    env_file: ".env"
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    volumes:
+      - ./src:/app/src
+    secrets:
+      - "private.pem"
+      - "public.pem"
+
+secrets:
+  "private.pem":
+    file: ./secrets/private.pem
+  "public.pem":
+    file: ./secrets/public.pem
