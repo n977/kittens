@@ -178,4 +178,4 @@ docker compose up -d
 
 ### Documentation
 
-OpenAPI HTML documentation is available locally through `REDOC_URL` endpoint.
+OpenAPI HTML documentation is available both [online](https://n977.github.io/kittens) and locally through `REDOC_URL` endpoint.

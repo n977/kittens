@@ -1,24 +1,23 @@
-from collections.abc import Callable
 import os
 import sys
-from typing import TextIO
-
-from sqlalchemy.dialects import postgresql
 
 # Include the current directory in PYTHONPATH to make the main package visible.
 sys.path.insert(0, os.getcwd())
-
-import csv
 
 import logging
 
 # Provide the basic configuration to the logger.
 logging.basicConfig()
 
+import csv
+
 from uuid import UUID
+from typing import TextIO
+from collections.abc import Callable
 
 from passlib.context import CryptContext
 from sqlmodel import SQLModel, create_engine, Session
+from sqlalchemy.dialects import postgresql
 
 from starlette.config import Config
 from src.models.UserModel import User
@@ -27,10 +26,10 @@ from src.models.BreedModel import Breed
 from src.models.KittenModel import Kitten
 from src.db import url
 
-PREFIX = "csv"
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+PREFIX = "csv"
 
 cfg = Config(".env")
 engine = create_engine(url(cfg))
@@ -97,4 +96,5 @@ def seed() -> None:
     logger.info("OK")
 
 
-seed()
+if __name__ == "__main__":
+    seed()
