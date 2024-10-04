@@ -1,6 +1,6 @@
 # Kittens API
 
-A REST API revolving around kittens. It features `password` OAuth2 flow, as well as architectural patterns such as repositiory pattern.
+A REST API revolving around kittens. It features `password` OAuth2 flow, as well as architectural patterns such as the repositiory pattern.
 
 Stack:
 
@@ -14,10 +14,11 @@ Stack:
 ## Interface
 
 The public API interface consists of common CRUD endpoints prefixed with:
-    - `/v1/colors`
-    - `/v1/breeds`
-    - `/v1/kittens`
-    - `/v1/auth`
+
+- `/v1/colors`
+- `/v1/breeds`
+- `/v1/kittens`
+- `/v1/auth`
 
 Writing data requires authentication through `password` OAuth2 flow at `/v1/auth/login`. To create a user, see Development section.
 
@@ -94,7 +95,7 @@ server: uvicorn
 }
 ```
 
-Write data with the acquired token (replace {access_token} with your token):
+Write data with the acquired token (replace `{access_token}` with your token):
 
 ```sh
 http POST :8000/v1/kittens/ color_id=5ce8134a-87e3-4c64-a76d-140ccd2432ec age=3 breed_id=ff494858-36b3-49ab-b7ec-6712f37825af description="Another British Shorthair kitten" Authorization:Bearer\ {access_token}
