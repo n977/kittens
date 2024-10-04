@@ -1,6 +1,6 @@
 # Kittens API
 
-A REST API revolving around kittens. It features `password` OAuth2 flow, as well as architectural patterns such as the repositiory pattern.
+A REST API revolving around kittens. It features the password OAuth2 flow, as well as architectural patterns such as the repositiory pattern.
 
 Stack:
 
