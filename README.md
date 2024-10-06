@@ -129,7 +129,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-To configure the environment, you may use `.env` and `.env.test`. A default template is provided as `.env.example`. Some variable values are ommited and must be filled before continuing further.
+To configure different environments, you may use `.env*`. Default templates are provided as `.env*.example`. Some variable values are ommited and must be filled before continuing further.
 
 ### Database
 
