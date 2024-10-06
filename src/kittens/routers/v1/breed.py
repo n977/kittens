@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Depends, status
-
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 from uuid import UUID
-
-from src.repos.BreedRepo import BreedRepo
-from src.models.BreedModel import Breed, BreedCreate, BreedUpdate, BreedRead
-from src.models.UserModel import User
-from src.auth import user
+from kittens.repos.breed import BreedRepo
+from kittens.models.breed import Breed, BreedCreate, BreedUpdate, BreedRead
+from kittens.models.user import User
+from kittens.auth import user, UNAUTHORIZED
 
 
 BreedRouter = APIRouter(
@@ -15,8 +13,8 @@ BreedRouter = APIRouter(
 )
 
 
-@BreedRouter.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
-async def save(
+@BreedRouter.post("/", status_code=status.HTTP_201_CREATED, responses={**UNAUTHORIZED})
+def save(
     payload: BreedCreate,
     breeds: Annotated[BreedRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -24,27 +22,35 @@ async def save(
     """
     Save a single breed.
     """
+
     breeds.save(payload)
 
 
 @BreedRouter.get("/", response_model=list[BreedRead])
-async def list(breeds: Annotated[BreedRepo, Depends()]) -> list[Breed]:
+def list(breeds: Annotated[BreedRepo, Depends()]) -> list[Breed]:
     """
     Return all breeds.
     """
+
     return breeds.list()
 
 
 @BreedRouter.get("/{breed_id}", response_model=BreedRead)
-async def get(breed_id: UUID, breeds: Annotated[BreedRepo, Depends()]) -> Breed:
+def get(breed_id: UUID, breeds: Annotated[BreedRepo, Depends()]) -> Breed:
     """
     Return a single breed.
     """
-    return breeds.get(breed_id)
+
+    breed = breeds.get(breed_id)
+    if not breed:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Breed not found"
+        )
+    return breed
 
 
-@BreedRouter.patch("/{breed_id}", response_model=None)
-async def update(
+@BreedRouter.patch("/{breed_id}", responses={**UNAUTHORIZED})
+def update(
     breed_id: UUID,
     payload: BreedUpdate,
     breeds: Annotated[BreedRepo, Depends()],
@@ -53,11 +59,12 @@ async def update(
     """
     Update a single breed.
     """
+
     breeds.update(breed_id, payload)
 
 
-@BreedRouter.delete("/{breed_id}", response_model=None)
-async def delete(
+@BreedRouter.delete("/{breed_id}", responses={**UNAUTHORIZED})
+def delete(
     breed_id: UUID,
     breeds: Annotated[BreedRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -65,4 +72,5 @@ async def delete(
     """
     Delete a single breed.
     """
+
     breeds.delete(breed_id)

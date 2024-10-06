@@ -1,10 +1,10 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from uuid import UUID
-from src.repos.ColorRepo import ColorRepo
-from src.models.ColorModel import Color, ColorCreate, ColorUpdate, ColorRead
-from src.models.UserModel import User
-from src.auth import user
+from kittens.repos.color import ColorRepo
+from kittens.models.color import Color, ColorCreate, ColorUpdate, ColorRead
+from kittens.models.user import User
+from kittens.auth import user, UNAUTHORIZED
 
 
 ColorRouter = APIRouter(
@@ -13,8 +13,8 @@ ColorRouter = APIRouter(
 )
 
 
-@ColorRouter.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
-async def save(
+@ColorRouter.post("/", status_code=status.HTTP_201_CREATED, responses={**UNAUTHORIZED})
+def save(
     payload: ColorCreate,
     colors: Annotated[ColorRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -22,27 +22,35 @@ async def save(
     """
     Save a single color.
     """
+
     colors.save(payload)
 
 
 @ColorRouter.get("/", response_model=list[ColorRead])
-async def list(colors: Annotated[ColorRepo, Depends()]) -> list[Color]:
+def list(colors: Annotated[ColorRepo, Depends()]) -> list[Color]:
     """
     Return all colors.
     """
+
     return colors.list()
 
 
 @ColorRouter.get("/{color_id}", response_model=ColorRead)
-async def get(color_id: UUID, colors: Annotated[ColorRepo, Depends()]) -> Color:
+def get(color_id: UUID, colors: Annotated[ColorRepo, Depends()]) -> Color:
     """
     Return a single color.
     """
-    return colors.get(color_id)
+
+    color = colors.get(color_id)
+    if not color:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Color not found"
+        )
+    return color
 
 
-@ColorRouter.patch("/{color_id}", response_model=None)
-async def update(
+@ColorRouter.patch("/{color_id}", responses={**UNAUTHORIZED})
+def update(
     color_id: UUID,
     payload: ColorUpdate,
     colors: Annotated[ColorRepo, Depends()],
@@ -51,11 +59,12 @@ async def update(
     """
     Update a single color.
     """
+
     colors.update(color_id, payload)
 
 
-@ColorRouter.delete("/{color_id}", response_model=None)
-async def delete(
+@ColorRouter.delete("/{color_id}", responses={**UNAUTHORIZED})
+def delete(
     color_id: UUID,
     colors: Annotated[ColorRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -63,4 +72,5 @@ async def delete(
     """
     Delete a single color.
     """
+
     colors.delete(color_id)

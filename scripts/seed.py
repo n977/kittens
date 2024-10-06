@@ -1,31 +1,18 @@
-import os
-import sys
-
-# Include the current directory in PYTHONPATH to make the main package visible.
-sys.path.insert(0, os.getcwd())
-
 import logging
-
-# Provide the basic configuration to the logger.
-logging.basicConfig()
-
 import csv
-
 from uuid import UUID
 from typing import TextIO
 from collections.abc import Callable
-
 from passlib.context import CryptContext
-from sqlmodel import SQLModel, create_engine, Session
-from sqlalchemy.dialects import postgresql
-
+from sqlmodel import create_engine, Session
 from starlette.config import Config
-from src.models.UserModel import User
-from src.models.ColorModel import Color
-from src.models.BreedModel import Breed
-from src.models.KittenModel import Kitten
-from src.db import url
+from kittens.models.color import Color
+from kittens.models.breed import Breed
+from kittens.models.kitten import Kitten
+from kittens.models.user import User
+from kittens.db import url, insert_if_not_exists
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -37,15 +24,6 @@ session = Session(engine)
 crypt = CryptContext(schemes=["bcrypt"])
 
 
-def insert_if_not_exists(session: Session, model: SQLModel) -> None:
-    st = (
-        postgresql.insert(model.__class__)
-        .values(**model.model_dump(exclude_unset=True))
-        .on_conflict_do_nothing()
-    )
-    session.exec(st)
-
-
 def proc(path: str, proc: Callable[[TextIO], None], required: bool = False) -> None:
     try:
         with open(path) as f:
@@ -55,8 +33,8 @@ def proc(path: str, proc: Callable[[TextIO], None], required: bool = False) -> N
             raise e
         else:
             logger.warning(f"Ignoring missing file '{path}'")
-    # except:
-    #     logger.error("Encountered an unknown error during file processing")
+    except Exception:
+        logger.error("Encountered an unknown error during file processing")
 
 
 def seed() -> None:

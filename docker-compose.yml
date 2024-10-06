@@ -8,25 +8,35 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - ${DB_PORT}:${DB_PORT}
-    volumes:
-    - ./data:/var/lib/postgresql/data
+    # volumes:
+    # - ./data:/var/lib/postgresql/data
   
   api:
     build:
       context: .
     container_name: kittens_api
     restart: always
-    env_file: ".env"
+    environment:
+      APP_NAME:
+      DB_PROTO:
+      DB_HOST:
+      DB_PORT:
+      DB_DATABASE:
+      DB_USER:
+      DB_PASSWORD:
+      KEY_PRIVATE_PATH:
+      KEY_PUBLIC_PATH:
+      REDOC_URL:
     ports:
       - ${APP_PORT}:${APP_PORT}
     volumes:
       - ./src:/app/src
     secrets:
-      - "private.pem"
-      - "public.pem"
+      - private.pem
+      - public.pem
 
 secrets:
-  "private.pem":
+  private.pem:
     file: ./secrets/private.pem
-  "public.pem":
+  public.pem:
     file: ./secrets/public.pem

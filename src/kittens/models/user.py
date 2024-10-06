@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
-from src.models import BaseModel
+from kittens.models import BaseModel
 
 
 USERNAME_MIN_LENGTH = 1

@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from typing import Optional, Annotated
 from uuid import UUID
 
-from src.repos.KittenRepo import KittenRepo
-from src.models.KittenModel import Kitten, KittenCreate, KittenUpdate, KittenRead
-from src.models.UserModel import User
-from src.auth import user
+from kittens.repos.kitten import KittenRepo
+from kittens.models.kitten import Kitten, KittenCreate, KittenUpdate, KittenRead
+from kittens.models.user import User
+from kittens.auth import user, UNAUTHORIZED
 
 
 KittenRouter = APIRouter(
@@ -15,8 +15,8 @@ KittenRouter = APIRouter(
 )
 
 
-@KittenRouter.post("/", response_model=None, status_code=status.HTTP_201_CREATED)
-async def save(
+@KittenRouter.post("/", status_code=status.HTTP_201_CREATED, responses={**UNAUTHORIZED})
+def save(
     payload: KittenCreate,
     kittens: Annotated[KittenRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -24,11 +24,12 @@ async def save(
     """
     Save a single kitten.
     """
+
     kittens.save(payload)
 
 
 @KittenRouter.get("/", response_model=list[KittenRead])
-async def list(
+def list(
     kittens: Annotated[KittenRepo, Depends()],
     color_id: Optional[UUID] = None,
     breed_id: Optional[UUID] = None,
@@ -36,32 +37,40 @@ async def list(
     """
     Return all kittens.
     """
+
     return kittens.list(color_id=color_id, breed_id=breed_id)
 
 
 @KittenRouter.get("/{kitten_id}", response_model=KittenRead)
-async def get(kitten_id: UUID, kittens: Annotated[KittenRepo, Depends()]) -> Kitten:
+def get(kitten_id: UUID, kittens: Annotated[KittenRepo, Depends()]) -> Kitten:
     """
     Return a single kitten.
     """
-    return kittens.get(kitten_id)
+
+    kitten = kittens.get(kitten_id)
+    if not kitten:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Kitten not found"
+        )
+    return kitten
 
 
-@KittenRouter.patch("/{kitten_id}", response_model=None)
-async def update(
+@KittenRouter.patch("/{kitten_id}", responses={**UNAUTHORIZED})
+def update(
     kitten_id: UUID,
     payload: KittenUpdate,
     kittens: Annotated[KittenRepo, Depends()],
     _: Annotated[User, Depends(user)],
 ) -> None:
     """
-    Patch a single kitten.
+    Update a single kitten.
     """
+
     kittens.update(kitten_id, payload)
 
 
-@KittenRouter.delete("/{kitten_id}", response_model=None)
-async def delete(
+@KittenRouter.delete("/{kitten_id}", responses={**UNAUTHORIZED})
+def delete(
     kitten_id: UUID,
     kittens: Annotated[KittenRepo, Depends()],
     _: Annotated[User, Depends(user)],
@@ -69,4 +78,5 @@ async def delete(
     """
     Delete a single kitten.
     """
+
     kittens.delete(kitten_id)

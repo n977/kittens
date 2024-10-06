@@ -1,6 +1,4 @@
 from fastapi.security import OAuth2PasswordBearer
-
-
 from functools import cache
 from passlib.context import CryptContext
 from starlette.config import Config

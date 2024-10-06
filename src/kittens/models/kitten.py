@@ -1,8 +1,7 @@
 from sqlmodel import Field, SQLModel
 from uuid import UUID, uuid4
 from typing import Optional
-
-from src.models import BaseModel
+from kittens.models import BaseModel
 
 DESCRIPTION_MAX_LENGTH = 255
 

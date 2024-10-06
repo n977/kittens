@@ -1,27 +1,18 @@
-from contextlib import nullcontext
-import os
 import sys
-
-# Include the current directory in PYTHONPATH to make the main package visible.
-sys.path.insert(0, os.getcwd())
-
 import logging
-
-# Provide the basic configuration to the logger.
-logging.basicConfig()
-
 import argparse
 import json
-
+from contextlib import nullcontext
 from uvicorn.importer import import_from_string
 
-
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("app", help="App import string")
-parser.add_argument("--out", help="Output file", default=None)
+parser.add_argument("app", help="app import string")
+parser.add_argument("-o", "--out", help="output file", default=None)
+
 
 def export():
     args = parser.parse_args()
@@ -29,7 +20,7 @@ def export():
     if not args.out or args.out == "-":
         out = nullcontext(sys.stdout)
     else:
-        out = open(args.out)
+        out = open(args.out, "w")
 
     app = import_from_string(args.app)
     openapi = app.openapi()

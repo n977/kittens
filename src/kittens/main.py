@@ -1,11 +1,9 @@
 from fastapi import FastAPI
-
 from starlette.config import Config
-
-from src.routers.v1.BreedRouter import BreedRouter
-from src.routers.v1.ColorRouter import ColorRouter
-from src.routers.v1.KittenRouter import KittenRouter
-from src.routers.v1.AuthRouter import AuthRouter
+from kittens.routers.v1.breed import BreedRouter
+from kittens.routers.v1.color import ColorRouter
+from kittens.routers.v1.kitten import KittenRouter
+from kittens.routers.v1.auth import AuthRouter
 
 
 cfg = Config(".env")

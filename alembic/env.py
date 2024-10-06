@@ -1,19 +1,14 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
-
 from sqlmodel import SQLModel
-
 from starlette.config import Config
-
-from src.db import url
-import src.models.KittenModel
-import src.models.ColorModel
-import src.models.BreedModel
-import src.models.UserModel
+from kittens.db import url
+import kittens.models.color
+import kittens.models.breed
+import kittens.models.kitten
+import kittens.models.user
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

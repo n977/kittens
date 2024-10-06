@@ -1,8 +1,8 @@
 from functools import cache
 from typing import Generator
-from passlib.context import CryptContext
 from starlette.config import Config
-from sqlmodel import Session, create_engine
+from sqlmodel import SQLModel, Session, create_engine
+from sqlalchemy.dialects import postgresql
 
 
 def url(cfg: Config) -> str:
@@ -25,3 +25,12 @@ def engine():
 def session() -> Generator[Session, None, None]:
     with Session(engine()) as session:
         yield session
+
+
+def insert_if_not_exists(session: Session, model: SQLModel) -> None:
+    st = (
+        postgresql.insert(model.__class__)
+        .values(**model.model_dump(exclude_unset=True))
+        .on_conflict_do_nothing()
+    )
+    session.exec(st)

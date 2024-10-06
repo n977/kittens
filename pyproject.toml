@@ -1,0 +1,10 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kittens"
+dynamic = ["version"]
+
+[tool.hatch.version]
+path = "src/kittens/__init__.py"
